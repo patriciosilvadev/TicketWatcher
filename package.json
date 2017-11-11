@@ -1,0 +1,39 @@
+{
+  "name": "ticketwatcher",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "clean": "gulp clean",
+    "build": "set NODE_ENV=dev && webpack",
+    "release": "set NODE_ENV=production && webpack && gulp releaseDocker",
+    "nodemon": "nodemon start"
+  },
+  "dependencies": {
+    "body-parser": "1.17.1",
+    "bootstrap": "3.3.7",
+    "cookie-parser": "1.4.3",
+    "datatables.net-dt": "1.10.16",
+    "debug": "2.6.3",
+    "express": "4.15.2",
+    "jquery": "3.2.1",
+    "moment": "2.19.1",
+    "morgan": "1.8.1",
+    "request": "2.83.0",
+    "request-promise": "4.2.2",
+    "serve-favicon": "2.4.2"
+  },
+  "devDependencies": {
+    "compression-webpack-plugin": "1.0.1",
+    "css-loader": "0.28.7",
+    "del": "3.0.0",
+    "gulp": "3.9.1",
+    "gulp-gzip": "1.4.0",
+    "gulp-tar": "2.0.0",
+    "nodemon": "1.12.1",
+    "style-loader": "0.19.0",
+    "uglify-save-license": "0.4.1",
+    "url-loader": "0.6.2",
+    "webpack": "3.8.1"
+  }
+}

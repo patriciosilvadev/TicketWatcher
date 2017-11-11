@@ -1,0 +1,30 @@
+{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "nodemon",
+            "runtimeExecutable": "nodemon",
+            "program": "${workspaceFolder}\\bin\\www",
+            "restart": true,
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceFolder}\\bin\\www",
+            "env": {
+                "REDMINE_URI": "http://livaz:32770",
+                "API_KEY": "d89726812732cd0a2388f122ce539731b1e71bd7",
+                "TICKETS_PATH": "./tickets",
+                "FESS_URI" : "http://livaz:1111/?ta=t"
+            }
+        }
+    ]
+}

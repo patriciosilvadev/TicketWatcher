@@ -1,0 +1,4 @@
+node_modules/
+tickets/
+main.js
+npm-debug.log
