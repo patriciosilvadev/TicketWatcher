@@ -1,5 +1,6 @@
 {
   "name": "ticketwatcher",
+  "description": "チケット表示",
   "version": "0.0.0",
   "private": true,
   "scripts": {

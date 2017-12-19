@@ -1,7 +1,14 @@
 const webpack = require("webpack");
 const path = require('path');
 const CompressionPlugin = require("compression-webpack-plugin");
-const DEBUG = !process.env.NODE_ENV == 'production';
+const DEBUG = process.env.NODE_ENV ? process.env.NODE_ENV.trim() == 'dev' : false;
+
+if (!DEBUG) {
+    plugins.push(
+        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.AggressiveMergingPlugin()
+    );
+}
 
 var plugins = [
     new webpack.ProvidePlugin({
@@ -12,19 +19,7 @@ var plugins = [
     }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 ];
-if (!DEBUG) {
-    plugins.push(
-        new webpack.optimize.UglifyJsPlugin(),
-        new webpack.optimize.AggressiveMergingPlugin(),
-        // new CompressionPlugin({
-        //     asset: '[path].gz[query]',
-        //     algorithm: 'gzip',
-        //     test: /\.js$/,
-        //     threshold: 10240,
-        //     minRatio: 0.8
-        //   })
-    );
-}
+
 var modules = {
     loaders: [
         { test: /\.css$/, loader: 'style-loader!css-loader?minimize' },
