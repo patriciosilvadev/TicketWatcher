@@ -22,7 +22,7 @@ var fessUri = process.env.FESS_URI
 console.log(`FESS_URI=${fessUri}`);
 
 /** API KEY */
-var apiKey = process.env.API_KEY ? process.env.API_KEY : "d89726812732cd0a2388f122ce539731b1e71bd7";
+var apiKey = process.env.API_KEY ? process.env.API_KEY : "XXXXXXXXXX";
 
 /** チケット格納パス */
 var ticketsPath = process.env.TICKETS_PATH ? process.env.TICKETS_PATH : "/data";
