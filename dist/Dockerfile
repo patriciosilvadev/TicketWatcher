@@ -1,6 +1,6 @@
 FROM node:8-alpine
 
-ADD ./ /root/ticketWatcher
-WORKDIR /root/ticketWatcher
+ADD ./ /root/ticketwatcher
+WORKDIR /root/ticketwatcher
 RUN npm install
 ENTRYPOINT ["node", "bin/www"]
