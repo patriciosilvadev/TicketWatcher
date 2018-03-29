@@ -39,7 +39,7 @@ var crowler = async function () {
  */
 const requestIssues = async function (beforeTicketDate) {
     var p = setting.query;
-    var uri = `${setting.redmineUri}/issues.json?f=&limit=5&sort=updated_on%3Adesc%2Cid%3Adesc&key=${setting.apiKey}${p}`;
+    var uri = `${setting.redmineUri}/issues.json?f=&limit=100&sort=updated_on%3Adesc%2Cid%3Adesc&key=${setting.apiKey}${p}`;
     var tickets = await request({ "uri": uri, "json": true });
     var pageCount = Math.ceil(tickets.total_count / tickets.limit);
     console.log(`ISSUES limit=${tickets.limit} ; total_count=${tickets.total_count} ; page_Count=${pageCount}`);
@@ -47,7 +47,7 @@ const requestIssues = async function (beforeTicketDate) {
 
     for (let i = 2; i <= pageCount; i++) {
         var updatedOn = new Date(tickets.issues[tickets.issues.length - 1].updated_on);
-        uri = `${setting.redmineUri}/issues.json?f=&limit=5&sort=updated_on%3Adesc%2Cid%3Adesc&key=${setting.apiKey}&page=${i}${p}`;
+        uri = `${setting.redmineUri}/issues.json?f=&limit=100&sort=updated_on%3Adesc%2Cid%3Adesc&key=${setting.apiKey}&page=${i}${p}`;
         var tickets2 = await request({ "uri": uri, "json": true });
         Array.prototype.push.apply(tickets.issues, tickets2.issues);
         console.log(`  [${i}/${pageCount}] GET: ${setting.redmineUri}/issues.json ${tickets2 ? "200" : "empty"}`);

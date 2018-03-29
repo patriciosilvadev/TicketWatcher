@@ -35,6 +35,6 @@ Sparky.task('release', ['build'], () => {
     {
       gzip: true, file: `./dist/${name}.tar.gz`
     },
-    ['app.js', 'package.json', 'package-lock.json', './bin/', './routes/', './public/', './views/']
+    ['app.js','crowler.js', 'setting.js', 'package.json', 'package-lock.json', './bin/', './routes/', './public/', './views/']
   ).then(_ => { })
 })

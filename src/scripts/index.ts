@@ -4,6 +4,7 @@ declare function require(x: string): any
 var dt = require('datatables.net')()
 import 'datatables.net-bs4'
 import { requestSync } from '../helper/XmlHttpRequestSync'
+import { getDateAndTimes } from '../helper/dateUtils'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'datatables/media/css/jquery.dataTables.css'
@@ -13,7 +14,7 @@ import '../stylesheets/style.css';
 import '../stylesheets/navbar-top-fixed.css';
 
 window.onload = () => {
-    $('#updateButton').on('click',()=> update());
+    $('#updateButton').on('click', () => update());
 
     // DataTablesの言語設定
     $.extend($.fn.dataTable.defaults, {
@@ -61,13 +62,12 @@ var showDataTablesSync = async () => {
         return;
     }
 
-    if(datas.fessUri) {
+    if (datas.fessUri) {
         $('#fessSearch').css("visibility", "visible");
     }
 
-
     console.log("成功");
-    $("#update").text(datas.updateDate ? datas.updateDate : "未取得");
+    $("#update").text(datas.updateDate ? getDateAndTimes(datas.updateDate) : "未取得");
     $('#tickets').DataTable().clear().draw();
     for (let i = 0; i < datas.issues.length; i++) {
         var element = datas.issues[i];
@@ -76,13 +76,14 @@ var showDataTablesSync = async () => {
             "id": `<a href='./${element.id}.pdf' style='display: block;'>#${element.id}</a>`,
             "project": element.project.name,
             "status": element.status.name,
-            "start_date": element.start_date,
+            "start_date": element.start_date ? element.start_date : "",
             "due_date": element.due_date ? element.due_date : "",
             "priority": element.priority.name,
             "subject": element.subject,
             "assigned_to": element.assigned_to ? element.assigned_to.name : "",
-            "updated_on": element.updated_on
+            "updated_on": getDateAndTimes(element.updated_on)
         }).draw();
+        // tz('Asia/Tokyo')
     }
 }
 
