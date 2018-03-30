@@ -20,7 +20,7 @@ const fuse = FuseBox.init({
   ],
 })
 
-Sparky.task('config', () => { fuse.bundle("bundle").instructions(`>javascripts/index.ts`) })
+Sparky.task('config', () => { fuse.bundle("bundle").instructions(`>scripts/index.ts`) })
 Sparky.task('clean', () => { Sparky.src('./').clean('public/') })
 Sparky.task('build', ['clean', 'config'], () => fuse.run())
 Sparky.task('release', ['build'], () => {
