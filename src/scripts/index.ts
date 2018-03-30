@@ -6,6 +6,10 @@ import 'datatables.net-bs4'
 import { requestSync } from '../helper/XmlHttpRequestSync'
 import { getDateAndTimes } from '../helper/dateUtils'
 
+// font-awesome RegularやBrandsライブラリを使用する場合、onloadでライブラリを追加
+import fontawesome from '@fortawesome/fontawesome'
+import faSolid from '@fortawesome/fontawesome-free-solid'
+
 import 'bootstrap/dist/css/bootstrap.css';
 import 'datatables/media/css/jquery.dataTables.css'
 import 'datatables.net-bs4/css/dataTables.bootstrap4.css';
@@ -14,6 +18,10 @@ import '../stylesheets/style.css';
 import '../stylesheets/navbar-top-fixed.css';
 
 window.onload = () => {
+    // font-awesomeの設定
+    fontawesome.library.add(faSolid)    // ライブラリの設定
+    fontawesome.dom.css() 
+
     $('#updateButton').on('click', () => update());
 
     // DataTablesの言語設定

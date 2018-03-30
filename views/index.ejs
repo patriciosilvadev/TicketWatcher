@@ -16,12 +16,12 @@
       aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <button type="button" class="btn btn-outline-info mr-4" id="updateButton"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+    <button type="button" class="btn btn-outline-info mr-4" id="updateButton"><span class="fas fa-sync"></span> Refresh</button>
     <div id="fessSearch" class="collapse navbar-collapse">
       <form method="GET" class="form-inline" id="searchForm">
           <input type="text" class="form-control mr-sm-2" name="q" id="searchquery" />
           <button type="submit" class="btn btn-success navbar-btn" id="searchbutton">
-            <span class="glyphicon glyphicon-search"></span> Search</button>
+            <span class="fas fa-search"></span> Search</button>
       </form>
     </div>
   </nav>
@@ -39,7 +39,7 @@
 
     <div id="listContainer" class="container">
       <div id="listSection" class="table-responsive">
-        <p>更新日：
+        <p><span class="fas fa-calendar"></span>更新日：
           <span id="update">未取得</span>
         </p>
         <table id="tickets" class="table table-striped table-hover table-autofilter">
