@@ -1,14 +1,16 @@
-var fs = require('fs');
-var request = require('request-promise');
-var path = require('path');
-var setting = require('./setting');
+import fs from 'fs';
+import path from 'path';
+import request from 'request-promise';
+import { promisify } from 'util';
+import { settings } from 'cluster';
+var setting = require('../config/setting');
 
 /**
  * Redmineをクロールして、チケットを取得する
  */
 var crowler = async function () {
     var issuesPath = path.join(setting.ticketsPath, "issues.json");
-    var file = fs.existsSync(issuesPath) ? JSON.parse(fs.readFileSync(issuesPath)) : undefined;
+    var file = fs.existsSync(issuesPath) ? JSON.parse(fs.readFileSync(issuesPath).toString()) : undefined;
 
     if (!file) console.log("[warn]issues.jsonが見つからない。");
 
@@ -21,23 +23,29 @@ var crowler = async function () {
         throw 304;
     }
 
-    const procedure = async function () {
-        var tickets = await requestIssues(beforeTicketDate);
+    return await procedure(beforeTicketDate);
+}
 
-        if (!tickets) return undefined;
+const procedure = async function (beforeTicketDate: Date) {
 
-        var count = await requestTickets(tickets, beforeTicketDate);
+    var projects = await request({ "uri":`${setting.redmineUri}/projects.json?key=${setting.apiKey}` , "json": true });
+    var writeFileSync = promisify(fs.writeFile);
+    await writeFileSync(setting.ticketsPath + '/projects.json', JSON.stringify(projects));
 
-        return tickets.issues.length > 0 ? `${count}件更新されました。` : "チケットは更新されていませんでした";
-    }
-    return await procedure();
+    var tickets = await requestIssues(beforeTicketDate);
+
+    if (!tickets) return undefined;
+
+    var count = await requestTickets(tickets, beforeTicketDate);
+
+    return tickets.issues.length > 0 ? `${count}件更新されました。` : "チケットは更新されていませんでした";
 }
 
 /**
  * Redmineからissues.jsonを取得する
  * @param {*} beforeTicketDate 前回のチケット更新日
  */
-const requestIssues = async function (beforeTicketDate) {
+const requestIssues = async function (beforeTicketDate: any) {
     var p = setting.query;
     var uri = `${setting.redmineUri}/issues.json?f=&limit=100&sort=updated_on%3Adesc%2Cid%3Adesc&key=${setting.apiKey}${p}`;
     var tickets = await request({ "uri": uri, "json": true });
@@ -57,9 +65,10 @@ const requestIssues = async function (beforeTicketDate) {
 
 /**
  * Redmineからチケットを取得する
- * @param {*} tickets 
+ * @param {any} tickets チケット情報
+ * @param {Date} beforeTicketDate  
  */
-const requestTickets = async function (tickets, beforeTicketDate) {
+const requestTickets = async function (tickets: any, beforeTicketDate: Date) {
     tickets.updateDate = new Date();
 
     var count = 0;

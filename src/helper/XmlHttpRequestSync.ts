@@ -5,7 +5,7 @@
  * @param isJson JSONオブジェクトとしてレスポンスを返す場合、true
  * @returns 取得パラーメータ
  */
-export function requestSync (url, isJson) {
+export function requestSync (url:string, isJson:boolean) {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);

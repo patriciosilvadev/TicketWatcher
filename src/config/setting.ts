@@ -20,5 +20,5 @@ console.log(`TICKETS_PATH=${module.exports.ticketsPath}`);
 /** Redmineアクセス時に付加するクエリ文字列 */
 module.exports.query = process.env.QUERY ? '&' + process.env.QUERY : '';
 /** タイトル */
-module.exports.title = process.env.TITLE ? process.env.TITLE : require("./package.json").name;
+module.exports.title = process.env.TITLE ? process.env.TITLE : require("../../package.json").name;
 // #endregion

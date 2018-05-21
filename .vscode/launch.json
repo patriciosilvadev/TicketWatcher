@@ -7,24 +7,20 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "nodemon",
-            "runtimeExecutable": "nodemon",
-            "program": "${workspaceFolder}\\bin\\www",
-            "restart": true,
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
+            "name": "Launch Program",
+            "program": "${workspaceFolder}/app.js"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "プログラムの起動",
-            "program": "${workspaceFolder}\\bin\\www",
+            "program": "${workspaceFolder}\\dist\\server.js",
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ],
             "env": {
-                "REDMINE_URI": "http://livaz:32768",
-                "API_KEY": "b2855eba417ecb2f7b8ea1dbc1bdcb069f6caf03",
-                "TICKETS_PATH": "/data",
-                "TITLE": "test",
-                "QUERY":"project_id=1"
+                "REDMINE_URI": "http://livaz:32768/",
+                "API_KEY":"b2855eba417ecb2f7b8ea1dbc1bdcb069f6caf03",
             }
         }
     ]
