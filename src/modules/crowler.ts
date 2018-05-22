@@ -8,7 +8,7 @@ var setting = require('../config/setting');
 /**
  * Redmineをクロールして、チケットを取得する
  */
-var crowler = async function () {
+export var exec = async function () {
     var issuesPath = path.join(setting.ticketsPath, "issues.json");
     var file = fs.existsSync(issuesPath) ? JSON.parse(fs.readFileSync(issuesPath).toString()) : undefined;
 
@@ -28,7 +28,7 @@ var crowler = async function () {
 
 const procedure = async function (beforeTicketDate: Date) {
 
-    var projects = await request({ "uri":`${setting.redmineUri}/projects.json?key=${setting.apiKey}` , "json": true });
+    var projects = await request({ "uri": `${setting.redmineUri}/projects.json?key=${setting.apiKey}`, "json": true });
     var writeFileSync = promisify(fs.writeFile);
     await writeFileSync(setting.ticketsPath + '/projects.json', JSON.stringify(projects));
 
@@ -92,4 +92,3 @@ const requestTickets = async function (tickets: any, beforeTicketDate: Date) {
     fs.writeFileSync(issuesPath, JSON.stringify(tickets));
     return count;
 }
-module.exports = crowler;

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
-import Bootstrap from 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -9,16 +8,14 @@ import fontawesome from '@fortawesome/fontawesome'
 import faSolid from '@fortawesome/fontawesome-free-solid'
 
 import mainComponent from './ticket-table.vue'
-import navComponent from './nav.vue'
-import alertComponent from './alert.vue'
+
+Vue.use(BootstrapVue);
 
 var app = new Vue(
     {
         el: '#app',
         components: {
-            "app-nav": navComponent,
-            "app-main": mainComponent,
-            "app-alert": alertComponent
+            "app-main": mainComponent
         }
     }
 )

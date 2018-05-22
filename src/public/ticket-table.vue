@@ -1,41 +1,27 @@
 <template>
-  <div id="listCard" class="card">
-    <ul class="nav nav-tabs">
-      <li class="nav-item" v-for="i in data.projects" v-bind:key="i.id">
-        <a class="nav-link active" href="#">{{i.name}}</a>
-      </li>
-    </ul>
-    <div class="card-block">
-      <h3 class="card-header">Featured</h3>
-        <i class="fas fa-calendar"></i>更新日：
-        <span v-if="data.issues.updateDate">{{getDateAndTimes(data.issues.updateDate)}}</span><span v-else>未取得</span>
-                <table id="tickets" class="table table-striped table-hover table-autofilter">
-        <thead>
-          <tr>
-            <th @click="sortTickets">#<i class="fas fa-sort-down"></i></th>
-            <th @click="sortTickets">ステータス</th>
-            <th @click="sortTickets">開始日</th>
-            <th @click="sortTickets">期日</th>
-            <th @click="sortTickets">優先度</th>
-            <th @click="sortTickets">題名</th>
-            <th @click="sortTickets">担当者</th>
-            <th @click="sortTickets">更新日</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody" class="list">
-          <tr v-for="i in data.issues.issues" v-bind:key="i.id" @click="showTicket(i.id)">
-            <td>{{i.id}}</td>
-            <td>{{i.status.name}}</td>
-            <td>{{i.start_date}}</td>
-            <td>{{i.due_date}}</td>
-            <td>{{i.priority.name}}</td>
-            <td>{{i.subject}}</td>
-            <td>{{i.assigned_to.name}}</td>
-            <td>{{getDateAndTimes(i.updated_on)}}</td>              
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div>
+    <b-nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <span class="navbar-brand">TicketWatcher</span>
+      <b-button info type="button" class="btn mr-4" @click="updateIssues">
+        <i class="fas fa-sync"></i> Refresh
+      </b-button>
+    </b-nav>
+
+    <b-card id="listCard">
+      <b-alert :show="message!=''" dismissible fade @click="message = ''">{{message}}</b-alert>
+
+      <b-tabs>
+        <b-tab :title="i.name" v-for="i in projects" v-bind:key="i.id" @click="onTabLink(i.name)"></b-tab>
+      </b-tabs>
+      <div class="card-block">
+        <div id="card-content">
+          <p><i class="fas fa-calendar"></i>更新日：
+            <span v-if="issues.updateDate">{{getDateAndTimes(issues.updateDate)}}</span><span v-else>未取得</span>
+          </p>
+          <b-table hover striped autofilter :items="issues.issues" :fields="fields" :filter="filter"></b-table>
+        </div>
+      </div>
+    </b-card>
   </div>
 </template>
 
@@ -46,12 +32,24 @@ import moment from "moment";
 export default {
   data() {
     return {
-      data: {
-        projects: [],
-        issues: [],
-        sortColumn: "id",
-        isDesc: false
-      }
+      projects: [],
+      issues: [],
+      fields: {
+        id: { label: "#", sortable: true },
+        status: { key: "status.name", label: "ステータス", sortable: true },
+        start_date: { label: "開始日", sortable: true },
+        due_date: { label: "期日", sortable: true },
+        priority: { key: "priority.name", label: "優先度", sortable: true },
+        subject: { label: "題名", sortable: true },
+        assigned_to: {
+          key: "assigned_to.name",
+          label: "担当者",
+          sortable: true
+        },
+        updated_on: { label: "更新日", sortable: true }
+      },
+      filter: "",
+      message: ""
     };
   },
   created: function() {
@@ -60,42 +58,44 @@ export default {
   methods: {
     requestTickets: function() {
       var self = this;
-      fetch(`issues.json`)
+      fetch("projects.json")
         .then(r => r.json())
         .then(body => {
-          self.data.issues = body;
-          return fetch("projects.json");
+          self.projects = body.projects;
+          return fetch(`issues.json`);
         })
         .then(r => r.json())
-        .then(body => (self.data.projects = body.projects));
+        .then(body => (self.issues = body));
     },
-    sortTickets: function() {},
     updateIssues: function() {
-      closeMessage();
-      if (document.getElementById("update").innerText != "未取得") {
-        var beforeDate = new Date(document.getElementById("update").innerText);
+      this.message = "";
+      if (this.issues.updateDate != undefined) {
+        var beforeDate = new Date(this.issues.updateDate);
         var nowDate = new Date();
         nowDate.setMinutes(nowDate.getMinutes() - 1);
         if (beforeDate && nowDate.getTime() < beforeDate.getTime()) {
-          showMessage("前回の更新から、3分間は更新できません", true);
+          this.message = "前回の更新から、3分間は更新できません";
           return;
         }
       }
 
-      showMessage("チケットを更新しています", false);
+      this.message = "チケットを更新しています";
+      var self = this;
       fetch("./update", { method: "POST" })
-        .then(i => i.json())
+        .then(i => i.text())
         .then(i => {
-          showMessage(i.responseText, false);
-          showDataTablesSync();
+          this.message = i;
+          self.requestTickets();
         });
     },
     showTicket: function(id) {
-      var url = id + ".pdf";
-      open(url, "_blank");
+      open(id + ".pdf", "_blank");
     },
     getDateAndTimes: function(value) {
       return moment(value).format("YYYY-MM-DD HH:mm:ss");
+    },
+    onTabLink: function(tabName) {
+      this.filter = tabName;
     }
   }
 };
@@ -103,7 +103,13 @@ export default {
 
 <style>
 #listCard {
-  margin-top: 60px;
+  margin-top: 80px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 60px;
+}
+#card-content {
+  margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
 }
