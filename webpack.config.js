@@ -1,9 +1,12 @@
 var path = require('path')
 var webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
-  entry: './src/public/main.js',
+  mode: 'development',
+//  mode: 'production',
+entry: './src/public/main.js',
   output: {
     path: path.resolve(__dirname, './dist/public'),
     publicPath: '/',
@@ -17,14 +20,6 @@ module.exports = {
           'vue-style-loader',
           'css-loader'
         ],
-      }, {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-          }
-          // other vue-loader options go here
-        }
       },
       {
         test: /\.js$/,
@@ -34,7 +29,14 @@ module.exports = {
       {
         test: /\.ts$/,
         loader: 'ts-loader',
-        exclude: /node_modules/
+        exclude: '/node_modules/',
+        options: {
+          appendTsSuffixTo: [/\.vue$/]
+        }
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
       },
       {
         test: /\.(png|jpg|gif|svg|html)$/,
@@ -52,7 +54,8 @@ module.exports = {
       jQuery: 'jquery',
       'window.jQuery': 'jquery',
       Popper: ['popper.js', 'default']
-    })
+    }),
+    new VueLoaderPlugin(),
   ],
   resolve: {
     alias: {
@@ -60,15 +63,17 @@ module.exports = {
     },
     extensions: ['*', '.js', '.vue', '.json']
   },
-  devServer: {
-    historyApiFallback: true,
-    noInfo: true,
-    overlay: true
+  externals:{
+    // "vue": "Vue",
+    // "bootstrap-vue": "Bootstrap-vue",
+    "moment": "moment", //1.5MB
+    "@fortawesome/": "@fortawesome/fontawesome",
+    "@fortawesome/fontawesome-free-solid": "@fortawesome/fontawesome-free-solid"
   },
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
+  // devtool: '#eval-source-map',
 }
 
 if (process.env.NODE_ENV === 'production') {

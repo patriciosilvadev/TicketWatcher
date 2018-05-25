@@ -18,7 +18,9 @@
           <p><i class="fas fa-calendar"></i>更新日：
             <span v-if="issues.updateDate">{{getDateAndTimes(issues.updateDate)}}</span><span v-else>未取得</span>
           </p>
-          <b-table hover striped autofilter :items="issues.issues" :fields="fields" :filter="filter"></b-table>
+          <b-table hover striped autofilter :items="issues.issues" :fields="fields" :filter="filter">
+            <template slot="id" slot-scope="data"><a :href="data.item.id + '.pdf'">{{data.item.id}}</a></template>
+          </b-table>
         </div>
       </div>
     </b-card>
@@ -49,7 +51,7 @@ export default {
         updated_on: { label: "更新日", sortable: true }
       },
       filter: "",
-      message: ""
+      message: "",
     };
   },
   created: function() {

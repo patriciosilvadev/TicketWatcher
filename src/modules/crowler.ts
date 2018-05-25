@@ -1,3 +1,4 @@
+import process from 'child_process'
 import fs from 'fs';
 import path from 'path';
 import request from 'request-promise';
@@ -5,10 +6,12 @@ import { promisify } from 'util';
 import { settings } from 'cluster';
 var setting = require('../config/setting');
 
+export var fork = () => process.fork('./');
+
 /**
  * Redmineをクロールして、チケットを取得する
  */
-export var exec = async function () {
+export default async function () {
     var issuesPath = path.join(setting.ticketsPath, "issues.json");
     var file = fs.existsSync(issuesPath) ? JSON.parse(fs.readFileSync(issuesPath).toString()) : undefined;
 
@@ -33,6 +36,8 @@ const procedure = async function (beforeTicketDate: Date) {
     await writeFileSync(setting.ticketsPath + '/projects.json', JSON.stringify(projects));
 
     var tickets = await requestIssues(beforeTicketDate);
+
+    await createIssuesjsonByProjects(tickets.issues, projects.projects);
 
     if (!tickets) return undefined;
 
@@ -60,7 +65,21 @@ const requestIssues = async function (beforeTicketDate: any) {
         Array.prototype.push.apply(tickets.issues, tickets2.issues);
         console.log(`  [${i}/${pageCount}] GET: ${setting.redmineUri}/issues.json ${tickets2 ? "200" : "empty"}`);
     }
+
+    tickets.updateDate = new Date();
+    var issuesPath = path.join(setting.ticketsPath, "issues.json");
+    fs.writeFileSync(issuesPath, JSON.stringify(tickets));
+
     return tickets;
+}
+
+const createIssuesjsonByProjects = async function (issues: any[], projects: any[]) {
+    for (var i = 0; i < projects.length; i++) {
+        var p = projects[i];
+        var issuesByProject = issues.filter(v => v.project.id == p.id);
+        var filePath = path.join(setting.ticketsPath, `issues-${p.name}.json`);
+        fs.writeFileSync(filePath, JSON.stringify(issuesByProject));
+    }
 }
 
 /**
@@ -69,8 +88,6 @@ const requestIssues = async function (beforeTicketDate: any) {
  * @param {Date} beforeTicketDate  
  */
 const requestTickets = async function (tickets: any, beforeTicketDate: Date) {
-    tickets.updateDate = new Date();
-
     var count = 0;
     for (let i = 0; i < tickets.issues.length; i++) {
         var updatedOn = new Date(tickets.issues[i].updated_on);
@@ -87,8 +104,15 @@ const requestTickets = async function (tickets: any, beforeTicketDate: Date) {
             fs.writeFileSync(filePath, b);
         }
     }
-
-    var issuesPath = path.join(setting.ticketsPath, "issues.json");
-    fs.writeFileSync(issuesPath, JSON.stringify(tickets));
     return count;
+}
+
+const requestTicket = async function (id: string) {
+    var uri = `${setting.redmineUri}/issues/${id}.pdf?key=${setting.apiKey}`;
+    var b = await request({ "url": uri, "encoding": null });
+    console.log(`  TICKET[${1}/${1}] GET: ${setting.redmineUri}/issues/${id}.pdf ${b ? "200" : "empty"}`);
+    if (b) {
+        var filePath = path.join(setting.ticketsPath, `${id}.pdf`);
+        fs.writeFileSync(filePath, b);
+    }
 }

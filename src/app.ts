@@ -1,6 +1,7 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
+import { promisify } from 'bluebird';
 var app = express();
 var cookieParser = require('cookie-parser');
 var createError = require('http-errors');
@@ -28,7 +29,7 @@ app.get('/issues.json', function (req, res, next) {
   res.send(file);
 });
 
-app.get('projects.json', (req,res,next) => res.sendfile(path.join(setting.ticketsPath, "projects.json")));
+app.get('projects.json', (req, res, next) => res.sendfile(path.join(setting.ticketsPath, "projects.json")));
 
 app.use('/update', require('./routes/update'));
 
@@ -38,8 +39,20 @@ app.use(function (err: any, req: any, res: any, next: any) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  res.status(err.status || 500);
-  res.render('error');
+  fs.readFile("./dist/public/error.html", 'utf-8', function (readerr, data) {
+
+    data = data.replace('<%= message %>', err.message).replace('<%= error.stack %>', err.stack).replace('<%= error.status %>', err.status);
+    res.send(data);
+  })
+
 });
+
+async function readPdf(id:string,  res: express.Response) {
+  var filePath = path.join(setting.ticketsPath, id + ".pdf");
+
+  var existsSync = promisify(fs.exists);
+
+  res.sendfile(filePath);
+}
 
 module.exports = app;
