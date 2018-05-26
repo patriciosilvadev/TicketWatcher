@@ -1,17 +1,18 @@
+import { promisify } from 'bluebird';
 import express from 'express';
 import fs from 'fs';
+import http from 'http';
 import path from 'path';
-import { promisify } from 'bluebird';
+import socket from 'socket.io';
 var app = express();
-var cookieParser = require('cookie-parser');
 var createError = require('http-errors');
 var logger = require('morgan');
 var setting = require('./config/setting.js');
+var io = socket(http);
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -33,6 +34,10 @@ app.get('projects.json', (req, res, next) => res.sendfile(path.join(setting.tick
 
 app.use('/update', require('./routes/update'));
 
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
 app.use(function (req: express.Request, res: express.Response, next: Function) { next(createError(404)) });
 
 app.use(function (err: any, req: any, res: any, next: any) {
@@ -40,14 +45,13 @@ app.use(function (err: any, req: any, res: any, next: any) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   fs.readFile("./dist/public/error.html", 'utf-8', function (readerr, data) {
-
     data = data.replace('<%= message %>', err.message).replace('<%= error.stack %>', err.stack).replace('<%= error.status %>', err.status);
     res.send(data);
   })
 
 });
 
-async function readPdf(id:string,  res: express.Response) {
+async function readPdf(id: string, res: express.Response) {
   var filePath = path.join(setting.ticketsPath, id + ".pdf");
 
   var existsSync = promisify(fs.exists);

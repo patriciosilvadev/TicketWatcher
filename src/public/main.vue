@@ -1,28 +1,27 @@
 <template>
   <div>
     <b-nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <span class="navbar-brand">TicketWatcher</span>
+      <b-navbar-brand>TicketWatcher</b-navbar-brand>
       <b-button info type="button" class="btn mr-4" @click="updateIssues">
         <i class="fas fa-sync"></i> Refresh
       </b-button>
     </b-nav>
 
     <b-card id="listCard">
-      <b-alert :show="message!=''" dismissible fade @click="message = ''">{{message}}</b-alert>
-
-      <b-tabs>
-        <b-tab :title="i.name" v-for="i in projects" v-bind:key="i.id" @click="onTabLink(i.name)"></b-tab>
-      </b-tabs>
-      <div class="card-block">
-        <div id="card-content">
-          <p><i class="fas fa-calendar"></i>更新日：
-            <span v-if="issues.updateDate">{{getDateAndTimes(issues.updateDate)}}</span><span v-else>未取得</span>
-          </p>
-          <b-table hover striped autofilter :items="issues.issues" :fields="fields" :filter="filter">
-            <template slot="id" slot-scope="data"><a :href="data.item.id + '.pdf'">{{data.item.id}}</a></template>
-          </b-table>
-        </div>
-      </div>
+      <b-card-header>
+        <b-alert :show="message!=''" dismissible fade @click="message = ''">{{message}}</b-alert>
+        <b-tabs>
+          <b-tab :title="i.name" v-for="i in projects" v-bind:key="i.id" @click="onTabLink(i.name)"></b-tab>
+        </b-tabs>
+      </b-card-header>
+      <b-card-body id="card-content">
+        <p><i class="fas fa-calendar"></i>更新日：
+          <span v-if="issues.updateDate">{{getDateAndTimes(issues.updateDate)}}</span><span v-else>未取得</span>
+        </p>
+        <b-table hover striped autofilter :items="issues.issues" :fields="fields" :filter="filter">
+          <template slot="id" slot-scope="data"><a :href="data.item.id + '.pdf'">{{data.item.id}}</a></template>
+        </b-table>
+      </b-card-body>
     </b-card>
   </div>
 </template>
@@ -30,7 +29,21 @@
 <script>
 import Vue from "vue";
 import moment from "moment";
+import io from "socket.io-client";
+import vueSocketIo from "vue-socket.io";
 
+/* var options = {
+    'force new connection':true,
+    port:3000
+};
+vueSocketIo
+
+var socket = io();
+  socket.on('connect', function(){});
+  socket.on('event', function(data){});
+  socket.on('disconnect', function(){});
+ */
+Vue.use(vueSocketIo, "http://localhost:3000");
 export default {
   data() {
     return {
@@ -98,6 +111,16 @@ export default {
     },
     onTabLink: function(tabName) {
       this.filter = tabName;
+    }
+  },
+  sockets: {
+    connect: function() {
+      console.log("socket connected");
+    },
+    updateError: function(val) {
+      console.log(
+        'this method was fired by the socket server. eg: io.emit("customEmit", data)'
+      );
     }
   }
 };

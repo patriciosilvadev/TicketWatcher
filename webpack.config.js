@@ -5,8 +5,8 @@ const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
   mode: 'development',
-//  mode: 'production',
-entry: './src/public/main.js',
+  //  mode: 'production',
+  entry: './src/public/main.js',
   output: {
     path: path.resolve(__dirname, './dist/public'),
     publicPath: '/',
@@ -14,41 +14,16 @@ entry: './src/public/main.js',
   },
   module: {
     rules: [
-      {
-        test: /\.css$/,
-        use: [
-          'vue-style-loader',
-          'css-loader'
-        ],
-      },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.ts$/,
-        loader: 'ts-loader',
-        exclude: '/node_modules/',
-        options: {
-          appendTsSuffixTo: [/\.vue$/]
-        }
-      },
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader'
-      },
-      {
-        test: /\.(png|jpg|gif|svg|html)$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]?[hash]'
-        }
-      }
+      { test: /\.css$/, use: ['vue-style-loader', 'css-loader'], },
+      { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ },
+      { test: /\.vue$/, loader: 'vue-loader' },
+      { test: /\.ts$/, loader: 'ts-loader', exclude: /node_modules/, options: { appendTsSuffixTo: [/\.vue$/] } },
+      { test: /\.(png|jpg|gif|svg|html)$/, loader: 'file-loader', options: { name: '[name].[ext]?[hash]' } }
     ],
   },
   plugins: [
-    new CopyWebpackPlugin([{ from: { glob: './src/public/index.html', dot: true }, to: '[name].[ext]' }]),
+    new CopyWebpackPlugin([{ from: { glob: './src/public/index.html', dot: true }, to: '[name].[ext]' },
+    { from: { glob: './src/public/error.html', dot: true }, to: '[name].[ext]' }]),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
@@ -58,22 +33,17 @@ entry: './src/public/main.js',
     new VueLoaderPlugin(),
   ],
   resolve: {
-    alias: {
-      'vue$': 'vue/dist/vue.esm.js'
-    },
+    alias: { 'vue$': 'vue/dist/vue.esm.js' },
     extensions: ['*', '.js', '.vue', '.json']
   },
-  externals:{
+  externals: {
     // "vue": "Vue",
     // "bootstrap-vue": "Bootstrap-vue",
-    "moment": "moment", //1.5MB
+    "moment": "moment",
     "@fortawesome/": "@fortawesome/fontawesome",
     "@fortawesome/fontawesome-free-solid": "@fortawesome/fontawesome-free-solid"
   },
-  performance: {
-    hints: false
-  },
-  // devtool: '#eval-source-map',
+  performance: { hints: false },
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -87,12 +57,8 @@ if (process.env.NODE_ENV === 'production') {
     }),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
-      compress: {
-        warnings: false
-      }
+      compress: { warnings: false }
     }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
+    new webpack.LoaderOptionsPlugin({ minimize: true })
   ])
 }
