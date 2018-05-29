@@ -1,4 +1,4 @@
-var fs = require('fs');
+import fs from 'fs';
 
 // #region 設定
 /** Redmine URI */

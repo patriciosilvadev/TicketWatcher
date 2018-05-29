@@ -26,25 +26,13 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
 import moment from "moment";
-import io from "socket.io-client";
-import vueSocketIo from "vue-socket.io";
-
-/* var options = {
-    'force new connection':true,
-    port:3000
-};
-vueSocketIo
-
-var socket = io();
-  socket.on('connect', function(){});
-  socket.on('event', function(data){});
-  socket.on('disconnect', function(){});
- */
-Vue.use(vueSocketIo, "http://localhost:3000");
-export default {
+// import io from "socket.io-client";
+// import vueSocketIo from "vue-socket.io";
+// Vue.use(vueSocketIo,socket);
+export default Vue.extend({
   data() {
     return {
       projects: [],
@@ -69,6 +57,7 @@ export default {
   },
   created: function() {
     this.requestTickets();
+    this.$socket.emit('emit_method', 'aaaa');
   },
   methods: {
     requestTickets: function() {
@@ -103,27 +92,17 @@ export default {
           self.requestTickets();
         });
     },
-    showTicket: function(id) {
+    showTicket: function(id:string) {
       open(id + ".pdf", "_blank");
     },
-    getDateAndTimes: function(value) {
+    getDateAndTimes: function(value:string) {
       return moment(value).format("YYYY-MM-DD HH:mm:ss");
     },
-    onTabLink: function(tabName) {
+    onTabLink: function(tabName:string) {
       this.filter = tabName;
     }
   },
-  sockets: {
-    connect: function() {
-      console.log("socket connected");
-    },
-    updateError: function(val) {
-      console.log(
-        'this method was fired by the socket server. eg: io.emit("customEmit", data)'
-      );
-    }
-  }
-};
+});
 </script>
 
 <style>

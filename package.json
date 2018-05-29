@@ -4,13 +4,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "run-p watch.* start",
     "start": "node dist/server.js",
-    "build": "cross-env NODE_ENV=development webpack && tsc",
-    "release": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build": "webpack --mode development && tsc",
+    "release": "webpack --mode production",
     "watch": "run-p watch.*",
     "watch.ts": "nodemon --ext ts --watch src -x tsc",
-    "watch.bundle": "nodemon --ext js,html,vue --watch src/public -x cross-env NODE_ENV=development webpack"
+    "watch.bundle": "nodemon --ext ts,html,vue --watch src/public -x webpack --mode development"
   },
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.11",
@@ -22,35 +21,27 @@
     "moment": "2.22.1",
     "morgan": "^1.9.0",
     "request": "^2.87.0",
-    "request-promise": "^4.2.2",
     "socket.io": "^2.1.1",
     "vue": "^2.5.16"
   },
   "devDependencies": {
-    "@types/compression": "^0.0.36",
     "@types/express": "^4.11.1",
     "@types/jquery": "3.3.2",
     "@types/request": "^2.47.0",
-    "@types/request-promise": "^4.1.41",
     "@types/socket.io": "^1.4.33",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.4",
     "browser-sync": "^2.24.1",
     "connect-browser-sync": "^2.1.0",
     "copy-webpack-plugin": "^4.5.1",
-    "cross-env": "^5.1.6",
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.4",
     "html-webpack-plugin": "^3.2.0",
     "nodemon": "^1.17.5",
     "npm-run-all": "^4.1.2",
-    "tar": "^4.4.4",
     "ts-loader": "^4.3.0",
     "typescript": "^2.8.3",
-    "vue-loader": "^15.2.1",
-    "vue-socket.io": "^2.1.1",
+    "vue-loader": "^15.2.2",
     "vue-template-compiler": "^2.5.16",
-    "webpack": "^4.9.1",
+    "webpack": "^4.10.0",
     "webpack-cli": "^2.1.4"
   }
 }

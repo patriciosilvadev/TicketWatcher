@@ -1,10 +1,10 @@
 import process from 'child_process'
 import fs from 'fs';
 import path from 'path';
-import request from 'request-promise';
 import { promisify } from 'util';
 import { settings } from 'cluster';
 var setting = require('../config/setting');
+var requestSync = promisify(require('Request'));
 
 export var fork = () => process.fork('./');
 
@@ -31,9 +31,11 @@ export default async function () {
 
 const procedure = async function (beforeTicketDate: Date) {
 
-    var projects = await request({ "uri": `${setting.redmineUri}/projects.json?key=${setting.apiKey}`, "json": true });
+    // projects.jsonの取得
+    var projects = await requestSync({ "uri": `${setting.redmineUri}/projects.json?key=${setting.apiKey}`, "json": true });
+    projects = projects.body;
     var writeFileSync = promisify(fs.writeFile);
-    await writeFileSync(setting.ticketsPath + '/projects.json', JSON.stringify(projects));
+    await writeFileSync(setting.ticketsPath + '/projects.json',JSON.stringify(projects));
 
     var tickets = await requestIssues(beforeTicketDate);
 
@@ -53,7 +55,8 @@ const procedure = async function (beforeTicketDate: Date) {
 const requestIssues = async function (beforeTicketDate: any) {
     var p = setting.query;
     var uri = `${setting.redmineUri}/issues.json?f=&limit=100&sort=updated_on%3Adesc%2Cid%3Adesc&key=${setting.apiKey}${p}`;
-    var tickets = await request({ "uri": uri, "json": true });
+    var tickets = await requestSync({ "uri": uri, "json": true });
+    tickets = tickets.body;
     var pageCount = Math.ceil(tickets.total_count / tickets.limit);
     console.log(`ISSUES limit=${tickets.limit} ; total_count=${tickets.total_count} ; page_Count=${pageCount}`);
     console.log(`  [1/${pageCount}] GET: ${setting.redmineUri}/issues.json ${tickets ? "200" : "empty"}`);
@@ -61,14 +64,15 @@ const requestIssues = async function (beforeTicketDate: any) {
     for (let i = 2; i <= pageCount; i++) {
         var updatedOn = new Date(tickets.issues[tickets.issues.length - 1].updated_on);
         uri = `${setting.redmineUri}/issues.json?f=&limit=100&sort=updated_on%3Adesc%2Cid%3Adesc&key=${setting.apiKey}&page=${i}${p}`;
-        var tickets2 = await request({ "uri": uri, "json": true });
+        var tickets2 = await requestSync({ "uri": uri, "json": true });
+        tickets2 = tickets2.body;
         Array.prototype.push.apply(tickets.issues, tickets2.issues);
         console.log(`  [${i}/${pageCount}] GET: ${setting.redmineUri}/issues.json ${tickets2 ? "200" : "empty"}`);
     }
 
     tickets.updateDate = new Date();
     var issuesPath = path.join(setting.ticketsPath, "issues.json");
-    fs.writeFileSync(issuesPath, JSON.stringify(tickets));
+    fs.writeFileSync(issuesPath, tickets);
 
     return tickets;
 }
@@ -97,7 +101,7 @@ const requestTickets = async function (tickets: any, beforeTicketDate: Date) {
 
         count++;
         var uri = `${setting.redmineUri}/issues/${tickets.issues[i].id}.pdf?key=${setting.apiKey}`;
-        var b = await request({ "url": uri, "encoding": null });
+        var b = await requestSync({ "url": uri, "encoding": null });
         console.log(`  TICKET[${i + 1}/${tickets.issues.length}] GET: ${setting.redmineUri}/issues/${tickets.issues[i].id}.pdf ${b ? "200" : "empty"}`);
         if (b) {
             var filePath = path.join(setting.ticketsPath, `${tickets.issues[i].id}.pdf`);
@@ -109,7 +113,7 @@ const requestTickets = async function (tickets: any, beforeTicketDate: Date) {
 
 const requestTicket = async function (id: string) {
     var uri = `${setting.redmineUri}/issues/${id}.pdf?key=${setting.apiKey}`;
-    var b = await request({ "url": uri, "encoding": null });
+    var b = await requestSync({ "url": uri, "encoding": null });
     console.log(`  TICKET[${1}/${1}] GET: ${setting.redmineUri}/issues/${id}.pdf ${b ? "200" : "empty"}`);
     if (b) {
         var filePath = path.join(setting.ticketsPath, `${id}.pdf`);
