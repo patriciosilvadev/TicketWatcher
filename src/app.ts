@@ -13,13 +13,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res, next) => res.sendfile('./public/index.html'));
 app.get('/projects.json', (req, res, next) => res.sendfile(path.join(setting.ticketsPath, "projects.json")));
-app.get('/issues.json', function (req, res, next) {
-  var issuesPath = path.join(setting.ticketsPath, "issues.json");
+
+app.get('/:id.json', function (req, res, next) {
+  var issuesPath = path.join(setting.ticketsPath, req.params["id"] + ".json");
   var file = fs.existsSync(issuesPath) ? JSON.parse(fs.readFileSync(issuesPath).toString()) : undefined;
   if (file) file.fessUri = setting.fessUri;
 
   res.send(file);
 });
+
 
 app.get('/:id.pdf', (req, res, next) => res.sendfile(path.join(setting.ticketsPath, req.params["id"] + ".pdf")));
 app.use('/update', require('./routes/update'));

@@ -39,7 +39,7 @@ const procedure = async function (beforeTicketDate: Date) {
 
     var tickets = await requestIssues(beforeTicketDate);
 
-    await createIssuesjsonByProjects(tickets.issues, projects.projects);
+    await createIssuesjsonByProjects(tickets.issues, projects.projects, tickets.updateDate);
 
     if (!tickets) return undefined;
 
@@ -77,10 +77,10 @@ const requestIssues = async function (beforeTicketDate: any) {
     return tickets;
 }
 
-const createIssuesjsonByProjects = async function (issues: any[], projects: any[]) {
+const createIssuesjsonByProjects = async function (issues: any[], projects: any[],updateDate :any) {
     for (var i = 0; i < projects.length; i++) {
         var p = projects[i];
-        var issuesByProject = issues.filter(v => v.project.id == p.id);
+        var issuesByProject ={'issues': issues.filter(v => v.project.id == p.id), 'updateDate': updateDate};
         var filePath = path.join(setting.ticketsPath, `issues-${p.name}.json`);
         fs.writeFileSync(filePath, JSON.stringify(issuesByProject));
     }

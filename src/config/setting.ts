@@ -5,10 +5,6 @@ import fs from 'fs';
 module.exports.redmineUri = process.env.REDMINE_URI ? process.env.REDMINE_URI : "http://localhost:3000";
 console.log(`REDMINE_URI=${module.exports.redmineUri}`);
 
-/** FESS URI */
-module.exports.fessUri = process.env.FESS_URI
-console.log(`FESS_URI=${module.exports.fessUri}`);
-
 /** API KEY */
 module.exports.apiKey = process.env.API_KEY ? process.env.API_KEY : "XXXXXXXXXX";
 

@@ -19,8 +19,8 @@
                 "${workspaceFolder}/**/*.js"
             ],
             "env": {
-                "REDMINE_URI": "http://livaz:32768/",
-                "API_KEY":"b2855eba417ecb2f7b8ea1dbc1bdcb069f6caf03",
+                "REDMINE_URI": "http://its.hokuyois.co.jp",
+                "API_KEY":"e9aea7daa88db3a77b0f054485b6bcfe4f10b507",
             }
         }
     ]

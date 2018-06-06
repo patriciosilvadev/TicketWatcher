@@ -2,9 +2,7 @@
   <div>
     <b-nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <b-navbar-brand>TicketWatcher</b-navbar-brand>
-      <b-button info type="button" class="btn mr-4" @click="updateIssues">
-        <i class="fas fa-sync"></i> Refresh
-      </b-button>
+      <b-button info type="button" class="btn mr-4" @click="updateIssues"><i class="fas fa-sync"></i> Refresh</b-button>
     </b-nav>
 
     <b-card id="listCard">
@@ -57,7 +55,6 @@ export default Vue.extend({
   },
   created: function() {
     this.requestTickets();
-    this.$socket.emit('emit_method', 'aaaa');
   },
   methods: {
     requestTickets: function() {
@@ -66,10 +63,7 @@ export default Vue.extend({
         .then(r => r.json())
         .then(body => {
           self.projects = body.projects;
-          return fetch(`issues.json`);
-        })
-        .then(r => r.json())
-        .then(body => (self.issues = body));
+        });
     },
     updateIssues: function() {
       this.message = "";
@@ -100,6 +94,14 @@ export default Vue.extend({
     },
     onTabLink: function(tabName:string) {
       this.filter = tabName;
+      var self = this;
+     fetch(`issues-${tabName}.json`).then(r => r.json())
+        .then(body => {
+          self.issues.splice(0, self.issues.length);
+          Array.prototype.push.apply(self.issues, body);
+        }
+          );
+
     }
   },
 });
